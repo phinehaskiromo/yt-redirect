@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Watch to Earn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; text-align: center; background: #f4f4f4; padding: 20px; }
+    iframe { width: 100%; max-width: 600px; height: 350px; }
+    button {
+      padding: 12px 20px;
+      margin-top: 20px;
+      font-size: 16px;
+      border: none;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+
+    #finalMessage {
+      display: none;
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      color: #856404;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      animation: slideDown 0.5s ease forwards;
+    }
+
+    #countdown {
+      font-weight: bold;
+      color: #d9534f;
+      font-size: 18px;
+    }
+
+    @keyframes slideDown {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h2>🎥 Watch this video to earn $0.01</h2>
+  <iframe id="videoFrame" src="https://www.youtube-nocookie.com/embed/HFokN0VCE-A?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  
+  <br>
+  <button id="doneBtn" disabled>✅ Done</button>
+
+  <div id="finalMessage">
+    📸 <strong>Take a screenshot of this page.</strong><br>
+    Then <strong>go back to Telegram</strong> (or it will open automatically in <span id="countdown">10</span> seconds) to upload it and claim your reward.
+
+    <br><br>
+    <a href="https://t.me/Ytviewvideobot?start=watched">
+      <button style="background-color:#007bff; width: 100%; max-width: 300px; padding: 10px 0;">🔙 Go to Telegram</button>
+    </a>
+  </div>
+
+  <script>
+    let hasPlayed = false;
+    let timerStarted = false;
+    const doneBtn = document.getElementById("doneBtn");
+    const finalMessage = document.getElementById("finalMessage");
+    const countdownEl = document.getElementById("countdown");
+
+    function startTimer() {
+      if (!timerStarted) {
+        timerStarted = true;
+        setTimeout(() => {
+          doneBtn.disabled = false;
+        }, 35000);
+      }
+    }
+
+    function onYouTubeIframeAPIReady() {
+      const player = new YT.Player("videoFrame", {
+        events: {
+          onStateChange: function (event) {
+            if (event.data === YT.PlayerState.PLAYING && !hasPlayed) {
+              hasPlayed = true;
+              startTimer();
+            }
+          }
+        }
+      });
+    }
+
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
+    window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+
+    doneBtn.onclick = () => {
+      if (!hasPlayed) {
+        alert("▶️ Please play the video first.");
+        return;
+      }
+
+      if (doneBtn.disabled) {
+        alert("⏳ Please wait 35 seconds before continuing.");
+        return;
+      }
+
+      // Show instruction message
+      finalMessage.style.display = "block";
+
+      // 10 second countdown
+      let countdown = 10;
+      const interval = setInterval(() => {
+        countdown--;
+        countdownEl.innerText = countdown;
+
+        if (countdown <= 0) {
+          clearInterval(interval);
+          // Open Telegram and close the page
+          window.open("https://t.me/Ytviewvideobot?start=watched", "_blank");
+          window.close(); // Will only work if opened via window.open()
+        }
+      }, 1000);
+    };
+  </script>
+</body>
+</html>
