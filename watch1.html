@@ -44,8 +44,8 @@
       }
     }
 
-    // Setup postMessage listener for YouTube player
-    window.onYouTubeIframeAPIReady = function () {
+    // Setup YouTube API
+    function onYouTubeIframeAPIReady() {
       const player = new YT.Player("videoFrame", {
         events: {
           onStateChange: function (event) {
@@ -56,14 +56,14 @@
           }
         }
       });
-    };
+    }
 
-    // Load YouTube Iframe API
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.body.appendChild(tag);
 
-    // Handle Done Button
+    window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+
     doneBtn.onclick = () => {
       if (!hasPlayed) {
         alert("▶️ Please play the video first.");
@@ -71,12 +71,12 @@
       }
 
       if (doneBtn.disabled) {
-        alert("⏳ Please finish watching the video (at least 35 seconds).");
+        alert("⏳ Please wait 35 seconds before continuing.");
         return;
       }
 
-      // Open Telegram app back to bot
-      window.location.href = "https://t.me/Ytviewvideobot";
+      // Redirect to Telegram to trigger /markwatched
+      window.location.href = "https://t.me/Ytviewvideobot?start=watched";
     };
   </script>
 </body>
